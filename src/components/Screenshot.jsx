@@ -17,7 +17,7 @@ export default function Screenshot({ src, alt, highlight, phone, s }) {
       <div className={`rounded-2xl border border-dashed border-white/20 bg-black/20 ${phone ? 'aspect-[9/16] max-w-[300px] mx-auto' : 'aspect-[16/10]'} flex flex-col items-center justify-center gap-2 text-center p-4`}>
         <ImageOff className="w-8 h-8 text-slate-500" aria-hidden />
         <p className="text-sm text-slate-400">{s.screenshotSoon}</p>
-        <code className="text-xs text-slate-500">public{src}</code>
+        <code className="text-xs text-slate-500">{src}</code>
       </div>
     );
   }

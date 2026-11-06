@@ -1,5 +1,5 @@
 import { ArrowRight } from 'lucide-react';
-import { LANGS, t } from '../i18n';
+import { LANGS, LOGO, t } from '../i18n';
 
 export default function LanguagePicker({ onPick }) {
   return (
@@ -7,7 +7,7 @@ export default function LanguagePicker({ onPick }) {
       <div className="w-full max-w-md animate-fade-up">
         <div className="flex justify-center mb-6">
           <img
-            src="/eflsite-final-logo-bw-1-150x150.webp"
+            src={LOGO}
             alt="eflsite.com"
             width="112"
             height="112"

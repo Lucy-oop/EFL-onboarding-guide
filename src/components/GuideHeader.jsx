@@ -1,12 +1,12 @@
 import { Languages } from 'lucide-react';
-import { LANGS } from '../i18n';
+import { LANGS, LOGO } from '../i18n';
 
 export default function GuideHeader({ s, lang, onLang, step, total, done }) {
   const pct = done ? 100 : ((step + 1) / total) * 100;
   return (
     <header className="sticky top-0 z-30 bg-navy/90 backdrop-blur border-b border-white/10">
       <div className="max-w-3xl mx-auto px-4 h-14 flex items-center gap-3">
-        <img src="/eflsite-final-logo-bw-1-150x150.webp" alt="" width="36" height="36" className="w-9 h-9 rounded-lg bg-white shrink-0" />
+        <img src={LOGO} alt="" width="36" height="36" className="w-9 h-9 rounded-lg bg-white shrink-0" />
         <span className="font-bold text-white truncate flex-1">{s.guideTitle}</span>
         <label className="relative flex items-center gap-1.5 text-sm text-slate-300">
           <Languages className="w-4 h-4" aria-hidden />

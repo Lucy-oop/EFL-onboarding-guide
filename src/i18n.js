@@ -1,4 +1,5 @@
 export const SITE_URL = 'https://eflsite.com/';
+export const LOGO = `${import.meta.env.BASE_URL}eflsite-final-logo-bw-1-150x150.webp`;
 
 export const LANGS = [
   { code: 'my', flag: '🇲🇲', native: 'မြန်မာ', htmlLang: 'my' },

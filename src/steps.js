@@ -47,8 +47,8 @@ const RAW = [
 export const STEPS = RAW.map((s, i) => ({
   ...s,
   image: {
-    mobile: `/steps/mobile/step-${i + 1}.webp`,
-    desktop: `/steps/desktop/step-${i + 1}.webp`,
+    mobile: `${import.meta.env.BASE_URL}steps/mobile/step-${i + 1}.webp`,
+    desktop: `${import.meta.env.BASE_URL}steps/desktop/step-${i + 1}.webp`,
   },
 }));
 
