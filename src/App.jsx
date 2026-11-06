@@ -66,6 +66,22 @@ export default function App() {
     setStep(Math.max(0, Math.min(DONE, n)));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+  const goRef = useRef(null);
+  useEffect(() => {
+    goRef.current = (d) => go(step + d);
+  });
+
+  // ← / → keys move between steps on desktop
+  useEffect(() => {
+    if (!lang || showAll) return;
+    const onKey = (e) => {
+      if (e.target.closest?.('select, input, textarea, [role=dialog]')) return;
+      if (e.key === 'ArrowRight') goRef.current(1);
+      if (e.key === 'ArrowLeft') goRef.current(-1);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [lang, showAll]);
 
   if (!lang) return <LanguagePicker onPick={pickLang} />;
 
@@ -89,24 +105,40 @@ export default function App() {
         done={step === DONE || showAll}
       />
 
-      <main className="max-w-3xl mx-auto px-4 pt-5 pb-32 sm:pb-12">
-        <div className="flex items-center justify-between gap-3 mb-4">
+      <main className={`max-w-3xl mx-auto px-4 pt-4 sm:pt-6 ${showAll ? 'pb-12' : 'pb-28'}`}>
+        {/* Progress dots + view toggle in one row */}
+        <div className="flex items-center gap-3 mb-4 min-h-[40px]">
+          {showAll ? (
+            <span className="flex-1" />
+          ) : (
+            <nav className="flex-1 flex items-center gap-1.5 sm:gap-2" aria-label="Steps">
+              {visible.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => go(i)}
+                  aria-label={s.stepOf(i + 1, TOTAL)}
+                  aria-current={i === step ? 'step' : undefined}
+                  className="group py-3 -my-3"
+                >
+                  <span
+                    className={`block h-2.5 rounded-full transition-all ${
+                      i === step ? 'w-7 bg-gold' : i < step ? 'w-2.5 bg-gold/60' : 'w-2.5 bg-white/20 group-hover:bg-white/40'
+                    }`}
+                  />
+                </button>
+              ))}
+            </nav>
+          )}
           <button
             onClick={() => {
-              setLang(null);
-              saveLang(null);
-              history.replaceState(null, '', ' ');
+              setShowAll((v) => !v);
+              window.scrollTo({ top: 0 });
             }}
-            className="text-sm text-slate-400 hover:text-gold"
-          >
-            ← {LANGS.find((l) => l.code === lang).flag} {s.changeLang}
-          </button>
-          <button
-            onClick={() => setShowAll((v) => !v)}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 px-3 py-1.5 text-sm text-slate-200 hover:border-gold"
+            aria-label={showAll ? s.showOne : s.showAll}
+            className="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-white/15 px-2.5 py-2 text-sm text-slate-200 hover:border-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
           >
             {showAll ? <Square className="w-4 h-4" aria-hidden /> : <List className="w-4 h-4" aria-hidden />}
-            {showAll ? s.showOne : s.showAll}
+            <span className="hidden min-[420px]:inline">{showAll ? s.showOne : s.showAll}</span>
           </button>
         </div>
 
@@ -119,21 +151,6 @@ export default function App() {
           </div>
         ) : (
           <>
-            {/* Step dots */}
-            <nav className="flex justify-center gap-2 mb-5" aria-label="Steps">
-              {visible.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => go(i)}
-                  aria-label={s.stepOf(i + 1, TOTAL)}
-                  aria-current={i === step ? 'step' : undefined}
-                  className={`h-2.5 rounded-full transition-all ${
-                    i === step ? 'w-8 bg-gold' : i < step ? 'w-2.5 bg-gold/50' : 'w-2.5 bg-white/20'
-                  }`}
-                />
-              ))}
-            </nav>
-
             <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
               {step === DONE ? (
                 <DoneScreen s={s} onRestart={() => go(0)} />
@@ -149,26 +166,26 @@ export default function App() {
               )}
             </div>
 
-            {/* Back / Next — fixed to the bottom on phones for thumb reach */}
-            {step !== DONE && (
-              <div className="fixed sm:static bottom-0 inset-x-0 z-20 bg-navy/95 sm:bg-transparent backdrop-blur sm:backdrop-blur-0 border-t border-white/10 sm:border-0 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:p-0 sm:mt-6">
-                <div className="max-w-3xl mx-auto flex gap-3">
-                  <button
-                    onClick={() => go(step - 1)}
-                    disabled={step === 0}
-                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1 rounded-xl border border-white/15 px-5 py-3.5 font-semibold text-white disabled:opacity-30 hover:border-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-                  >
-                    <ChevronLeft className="w-5 h-5" aria-hidden /> {s.back}
-                  </button>
+            {/* Back / Next — always pinned to the bottom so it's reachable without scrolling */}
+            <div className="fixed bottom-0 inset-x-0 z-20 bg-navy/95 backdrop-blur border-t border-white/10 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <div className="max-w-3xl mx-auto flex gap-3">
+                <button
+                  onClick={() => go(step - 1)}
+                  disabled={step === 0}
+                  className="flex-1 sm:flex-none sm:min-w-[140px] inline-flex items-center justify-center gap-1 whitespace-nowrap rounded-xl border border-white/15 px-3 sm:px-5 py-3 font-semibold text-white disabled:opacity-30 disabled:cursor-not-allowed hover:border-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                >
+                  <ChevronLeft className="w-5 h-5 shrink-0" aria-hidden /> {s.back}
+                </button>
+                {step !== DONE && (
                   <button
                     onClick={() => go(step + 1)}
-                    className="flex-[2] sm:flex-none sm:ml-auto inline-flex items-center justify-center gap-1 rounded-xl bg-gold text-navy px-6 py-3.5 font-bold hover:bg-yellow-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                    className="flex-[2] sm:flex-none sm:min-w-[180px] sm:ml-auto inline-flex items-center justify-center gap-1 whitespace-nowrap rounded-xl bg-gold text-navy px-3 sm:px-6 py-3 font-bold hover:bg-yellow-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                   >
-                    {step === TOTAL - 1 ? s.finish : s.next} <ChevronRight className="w-5 h-5" aria-hidden />
+                    {step === TOTAL - 1 ? s.finish : s.next} <ChevronRight className="w-5 h-5 shrink-0" aria-hidden />
                   </button>
-                </div>
+                )}
               </div>
-            )}
+            </div>
           </>
         )}
       </main>

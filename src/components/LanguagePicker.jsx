@@ -15,14 +15,18 @@ export default function LanguagePicker({ onPick }) {
           />
         </div>
 
-        <h1 className="text-center text-2xl sm:text-3xl font-extrabold text-white leading-tight">
+        <h1 className="text-center text-2xl sm:text-3xl font-extrabold text-white leading-tight text-balance">
           {t.en.welcome}
         </h1>
-        <p className="text-center text-slate-400 mt-3 text-sm" lang="my">{t.my.welcome}</p>
-        <p className="text-center text-slate-400 mt-1 text-sm" lang="zh-CN">{t.zh.welcome}</p>
+        <p className="text-center text-slate-400 mt-3 text-sm text-balance" lang="my">{t.my.welcome}</p>
+        <p className="text-center text-slate-400 mt-1 text-sm text-balance" lang="zh-CN">{t.zh.welcome}</p>
 
-        <p className="text-center text-xs uppercase tracking-widest text-gold font-semibold mt-8 mb-3">
-          Choose language · ဘာသာစကားရွေးပါ · 选择语言
+        <p className="flex flex-wrap justify-center gap-x-2 text-center text-xs uppercase tracking-widest text-gold font-semibold mt-8 mb-3">
+          <span className="whitespace-nowrap">Choose language</span>
+          <span aria-hidden className="hidden min-[400px]:inline">·</span>
+          <span className="whitespace-nowrap" lang="my">ဘာသာစကားရွေးပါ</span>
+          <span aria-hidden className="hidden min-[400px]:inline">·</span>
+          <span className="whitespace-nowrap" lang="zh-CN">选择语言</span>
         </p>
 
         <ul className="space-y-3">

@@ -7,9 +7,9 @@ export default function GuideHeader({ s, lang, onLang, step, total, done }) {
     <header className="sticky top-0 z-30 bg-navy/90 backdrop-blur border-b border-white/10">
       <div className="max-w-3xl mx-auto px-4 h-14 flex items-center gap-3">
         <img src={LOGO} alt="" width="36" height="36" className="w-9 h-9 rounded-lg bg-white shrink-0" />
-        <span className="font-bold text-white truncate flex-1">{s.guideTitle}</span>
+        <span className="font-bold text-white truncate flex-1 text-sm min-[400px]:text-base">{s.guideTitle}</span>
         <label className="relative flex items-center gap-1.5 text-sm text-slate-300">
-          <Languages className="w-4 h-4" aria-hidden />
+          <Languages className="w-4 h-4 hidden min-[400px]:block" aria-hidden />
           <span className="sr-only">{s.changeLang}</span>
           <select
             value={lang}

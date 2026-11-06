@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ImageOff, X, ZoomIn } from 'lucide-react';
 
 export default function Screenshot({ src, alt, highlight, phone, s }) {
@@ -9,7 +10,12 @@ export default function Screenshot({ src, alt, highlight, phone, s }) {
     if (!open) return;
     const onKey = (e) => e.key === 'Escape' && setOpen(false);
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden'; // stop the page scrolling behind the lightbox
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+    };
   }, [open]);
 
   if (failed) {
@@ -27,7 +33,7 @@ export default function Screenshot({ src, alt, highlight, phone, s }) {
       <img src={src} alt={alt} onError={() => setFailed(true)} className="block w-full h-auto" loading="lazy" />
       {highlight && (
         <span
-          className="absolute rounded-lg ring-4 ring-red-500 shadow-[0_0_0_9999px_rgba(0,0,0,0.25)] animate-pulse pointer-events-none"
+          className="absolute rounded-lg ring-4 ring-red-500 shadow-[0_0_0_9999px_rgba(10,25,47,0.12)] animate-pulse pointer-events-none"
           style={{
             left: `${highlight.x}%`,
             top: `${highlight.y}%`,
@@ -52,13 +58,14 @@ export default function Screenshot({ src, alt, highlight, phone, s }) {
         </span>
       </button>
 
-      {open && (
+      {open &&
+        createPortal(
         <div
           role="dialog"
           aria-modal="true"
           aria-label={alt}
           onClick={() => setOpen(false)}
-          className="fixed inset-0 z-50 bg-black/90 overflow-auto p-4 flex items-start sm:items-center justify-center"
+          className="fixed inset-0 z-50 bg-black/90 overflow-auto p-4 pt-16 flex items-start sm:items-center justify-center"
         >
           <button
             onClick={() => setOpen(false)}
@@ -70,7 +77,8 @@ export default function Screenshot({ src, alt, highlight, phone, s }) {
           <div className={`w-full ${phone ? 'max-w-md' : 'max-w-5xl'}`} onClick={(e) => e.stopPropagation()}>
             {image}
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );
